@@ -1,59 +1,66 @@
-# CentralDesbravador
+# Central Desbravador
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.14.
+Aplicativo Angular 20 com PWA para gerenciamento do ranking do clube de Desbravadores.
 
-## Development server
-
-To start a local development server, run:
+## Como rodar
 
 ```bash
-ng serve
+npm install
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abra `http://localhost:4200`.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## PWA (instalavel)
 
 ```bash
-ng generate component component-name
+npm run build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Sirva o conteudo da pasta `dist/central-desbravador` em um servidor estatico com HTTPS para testar instalacao offline.
+
+## ZardUI + Tailwind
+
+Esta base ja inclui:
+
+- `components.json` com os aliases do ZardUI
+- `.postcssrc.json` configurado para Tailwind CSS v4
+- `src/styles.css` com o tema ZardUI (base neutral)
+- Componentes ZardUI em `src/app/shared/components`
+
+Para adicionar novos componentes:
 
 ```bash
-ng generate --help
+npx @ngzard/ui@latest add button card dialog
 ```
 
-## Building
+## Modo de simulacao
 
-To build the project run:
+- Use o menu no topo (avatar) para trocar perfil e unidade.
+- A rota `/simulacao` permite ajustar o perfil com mais contexto.
+- Mudancas sao refletidas imediatamente em rotas, acoes e permissões.
 
-```bash
-ng build
+## Trocar mock por API no futuro
+
+Os repositorios seguem a mesma assinatura de uma API real (Observables e metodos CRUD):
+
+- `src/app/features/ranking/services/activity.repository.ts`
+- `src/app/features/ranking/services/submission.repository.ts`
+- `src/app/features/ranking/services/ranking.repository.ts`
+
+Para migrar:
+
+1. Crie implementacoes novas usando `HttpClient` dentro desses repositorios.
+2. Preserve as assinaturas publicas (`list/get/create/update/patch/delete`).
+3. Remova o uso de `MockDbService` e `MockHttpService` nas implementacoes.
+
+Os mocks atuais persistem dados em `LocalStorage` e imagens em `IndexedDB`.
+
+## Estrutura principal
+
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+src/app/core        -> guards, layout, utilitarios e types
+src/app/data        -> mock db, seed e persistencia local
+src/app/features    -> ranking e paginas
+src/app/shared/ui   -> componentes de UI reutilizaveis
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
