@@ -2,12 +2,12 @@
   <header class="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur">
     <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 lg:px-6">
       <a routerLink="/" class="flex items-center gap-3">
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-          <span class="text-lg font-semibold">CD</span>
-        </div>
+        <img src="./assets/logo_falcao_real.png" alt="Logo Falcão Real" class="w-15 rounded-full"/>
+        <!-- <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+        </div> -->
         <div>
-          <p class="text-sm uppercase tracking-[0.2em] text-muted-foreground">Central</p>
-          <h1 class="text-xl font-semibold">Desbravador</h1>
+          <p class="text-sm uppercase tracking-[0.2em] text-muted-foreground">Clube</p>
+          <h1 class="text-xl font-semibold">Falcão Real</h1>
         </div>
       </a>
 
@@ -45,7 +45,7 @@
 
         <z-dropdown-menu>
           <div dropdown-trigger class="flex items-center gap-3 rounded-full border border-border px-3 py-2 shadow-sm">
-            <z-avatar zSize="sm" [zFallback]="context().displayName.slice(0, 2).toUpperCase()" />
+            <!-- <z-avatar zSize="sm" [zFallback]="context().displayName.slice(0, 2).toUpperCase()" /> -->
             <div class="hidden flex-col text-left sm:flex">
               <span class="text-sm font-medium">{{ context().displayName }}</span>
               <span class="text-xs text-muted-foreground">{{ context().profile }}</span>

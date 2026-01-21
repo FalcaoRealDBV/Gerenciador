@@ -91,7 +91,7 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
       <div class="grid gap-4">
         @for (activity of filteredActivities(); track activity.id) {
           <z-card [zTitle]="activity.nome" [zDescription]="activity.descricao">
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between flex-wrap">
               <div class="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span>{{ activity.dataInicio }} - {{ activity.dataFinal }}</span>
                 <span>Base: {{ activity.pontuacao }} pts</span>
