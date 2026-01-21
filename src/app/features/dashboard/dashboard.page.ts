@@ -26,6 +26,18 @@ import { ZardBadgeComponent } from '@/shared/components/badge';
       </div>
 
       <div class="grid gap-4 md:grid-cols-3">
+         <z-card zTitle="Atalhos">
+          <div class="flex flex-wrap gap-2">
+            <a z-button routerLink="/ranking/atividades" zType="default">Ver atividades</a>
+            @if (isDiretoria()) {
+              <a z-button routerLink="/ranking/atividades/nova" zType="outline">Nova atividade</a>
+              <a z-button routerLink="/ranking/avaliacoes" zType="outline">Avaliar pendencias</a>
+              <a z-button routerLink="/ranking/ranking" zType="outline">Ranking</a>
+            } @else {
+              <!-- <a z-button routerLink="/simulacao" zType="outline">Simulacao</a> -->
+            }
+          </div>
+        </z-card>
         <z-card zTitle="Atividades cadastradas" zDescription="Total de atividades vigentes">
           <div class="flex items-end justify-between">
             <span class="text-4xl font-semibold">{{ activities().length }}</span>
@@ -40,7 +52,7 @@ import { ZardBadgeComponent } from '@/shared/components/badge';
           </div>
         </z-card>
 
-        <z-card zTitle="Pontuacao lider" zDescription="Unidade em destaque">
+        <!-- <z-card zTitle="Pontuacao lider" zDescription="Unidade em destaque">
           <div class="flex items-end justify-between">
             <div>
               <span class="text-3xl font-semibold">{{ topUnit().total }}</span>
@@ -48,24 +60,13 @@ import { ZardBadgeComponent } from '@/shared/components/badge';
             </div>
             <z-badge zType="default">Top</z-badge>
           </div>
-        </z-card>
+        </z-card> -->
       </div>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <z-card zTitle="Atalhos">
-          <div class="flex flex-wrap gap-2">
-            <a z-button routerLink="/ranking/atividades" zType="default">Ver atividades</a>
-            @if (isDiretoria()) {
-              <a z-button routerLink="/ranking/atividades/nova" zType="outline">Nova atividade</a>
-              <a z-button routerLink="/ranking/avaliacoes" zType="outline">Avaliar pendencias</a>
-              <a z-button routerLink="/ranking/ranking" zType="outline">Ranking</a>
-            } @else {
-              <a z-button routerLink="/simulacao" zType="outline">Simulacao</a>
-            }
-          </div>
-        </z-card>
+       
 
-        <z-card zTitle="Minha unidade" zDescription="Resumo rapido">
+        <!-- <z-card zTitle="Minha unidade" zDescription="Resumo rapido">
           <div class="flex flex-col gap-2 text-sm">
             <div class="flex items-center justify-between">
               <span class="text-muted-foreground">Unidade</span>
@@ -80,7 +81,7 @@ import { ZardBadgeComponent } from '@/shared/components/badge';
               <span class="font-medium">{{ concluidasDaUnidade() }}</span>
             </div>
           </div>
-        </z-card>
+        </z-card> -->
       </div>
     </section>
   `,

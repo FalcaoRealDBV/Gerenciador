@@ -1,15 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { SessionService } from '@/core/services/session.service';
 import { MockDbService } from '@/data/mock-db.service';
 import type { UserProfile } from '@/core/types/user-context';
 import { ZardBadgeComponent } from '@/shared/components/badge';
+import { ZardButtonComponent } from '@/shared/components/button';
 import { ZardDropdownMenuComponent } from '@/shared/components/dropdown';
 import { ZardDropdownMenuItemComponent } from '@/shared/components/dropdown/dropdown-item.component';
 import { ZardAvatarComponent } from '@/shared/components/avatar';
+import { ZardIconComponent } from '@/shared/components/icon';
 import { ZardToastComponent } from '@/shared/components/toast';
-import { NgClass } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
 interface NavLink {
   label: string;
@@ -26,9 +29,11 @@ interface NavLink {
     RouterLinkActive,
     NgClass,
     ZardBadgeComponent,
+    ZardButtonComponent,
     ZardDropdownMenuComponent,
     ZardDropdownMenuItemComponent,
     ZardAvatarComponent,
+    ZardIconComponent,
     ZardToastComponent
   ],
   templateUrl: './shell.component.html',
@@ -52,10 +57,19 @@ export class ShellComponent {
 
   private readonly session = inject(SessionService);
   private readonly db = inject(MockDbService);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+
+  protected readonly isDarkMode = signal(false);
 
   protected readonly units = computed(() => this.db.units());
   protected readonly context = this.session.userContext;
   protected readonly isDiretoria = computed(() => this.session.profile() === 'DIRETORIA');
+
+  constructor() {
+    this.applyThemeFromStorage();
+  }
 
   canShowLink(link: NavLink): boolean {
     if (!link.roles?.length) {
@@ -70,5 +84,29 @@ export class ShellComponent {
 
   setUnit(unitId: string) {
     this.session.setUnit(unitId);
+  }
+
+  toggleDarkMode() {
+    this.setDarkMode(!this.isDarkMode());
+  }
+
+  private applyThemeFromStorage() {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    const stored = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+    const shouldUseDark = stored === 'dark' || (!stored && prefersDark);
+    this.setDarkMode(shouldUseDark);
+  }
+
+  private setDarkMode(isDark: boolean) {
+    this.isDarkMode.set(isDark);
+    if (!this.isBrowser) {
+      return;
+    }
+    this.document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }
 }

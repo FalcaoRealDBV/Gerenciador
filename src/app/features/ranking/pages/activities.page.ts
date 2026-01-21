@@ -101,7 +101,7 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
               </div>
               <div class="flex items-center gap-2">
                 <app-status-badge [status]="statusFor(activity)" />
-                <a z-button [routerLink]="['/ranking/atividades', activity.id]" zType="outline">Detalhes</a>
+                  <a z-button [routerLink]="['/ranking/atividades', activity.id]" zType="outline">{{isDiretoria() ? 'Detalhes' : 'Abrir'}}</a>
                 @if (isDiretoria()) {
                   <a z-button [routerLink]="['/ranking/atividades', activity.id, 'editar']" zType="ghost">Editar</a>
                   <button z-button zType="destructive" (click)="confirmDelete(activity)">Excluir</button>

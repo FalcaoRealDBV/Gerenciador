@@ -157,15 +157,36 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fraunces', 'Times New Roman', serif;
     letter-spacing: 0.2px;
   }
 }
 
 .app-shell {
-  background: radial-gradient(1200px 500px at 15% -10%, color-mix(in oklch, var(--color-primary) 18%, transparent), transparent),
-    radial-gradient(800px 400px at 90% 5%, color-mix(in oklch, var(--color-chart-2) 20%, transparent), transparent),
-    linear-gradient(180deg, color-mix(in oklch, var(--color-background) 96%, #f6f2e8 4%), var(--color-background));
+  position: relative; /* Necessário para posicionar o background atrás */
+  overflow: hidden;    /* Garante que filtros como 'blur' não vazem pelas bordas */
+  width: 100%;
+  min-height: 100vh;
+}
+
+.app-shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Suas configurações de background aqui */
+  background-image: url('./assets/background.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  
+  /* Aplique o filtro desejado aqui */
+  filter: brightness(0.9); 
+  
+  z-index: -1; /* Joga a imagem para trás de todo o conteúdo */
+  transform: scale(1.1); /* Opcional: evita bordas brancas se usar blur */
 }
 
 .app-surface {

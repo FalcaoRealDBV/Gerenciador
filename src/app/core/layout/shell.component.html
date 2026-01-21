@@ -11,66 +11,85 @@
         </div>
       </a>
 
-      <nav class="hidden items-center gap-2 md:flex">
-        @for (link of links; track link.path) {
-          @if (canShowLink(link)) {
-            <a
-              [routerLink]="link.path"
-              routerLinkActive="bg-secondary text-foreground"
-              class="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
-            >
-              {{ link.label }}
-            </a>
+      <div class="flex items-center gap-3">
+        <nav class="hidden items-center gap-2 md:flex">
+          @for (link of links; track link.path) {
+            @if (canShowLink(link)) {
+              <a
+                [routerLink]="link.path"
+                routerLinkActive="bg-secondary text-foreground"
+                class="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              >
+                {{ link.label }}
+              </a>
+            }
           }
-        }
-      </nav>
+        </nav>
 
-      <z-dropdown-menu>
-        <div dropdown-trigger class="flex items-center gap-3 rounded-full border border-border px-3 py-2 shadow-sm">
-          <z-avatar zSize="sm" [zFallback]="context().displayName.slice(0, 2).toUpperCase()" />
-          <div class="hidden flex-col text-left sm:flex">
-            <span class="text-sm font-medium">{{ context().displayName }}</span>
-            <span class="text-xs text-muted-foreground">{{ context().profile }}</span>
+        <!-- <button
+          type="button"
+          z-button
+          zType="ghost"
+          zSize="sm"
+          class="rounded-full"
+          [attr.aria-pressed]="isDarkMode()"
+          (click)="toggleDarkMode()"
+        >
+          @if (isDarkMode()) {
+            <z-icon zType="sun" class="h-4 w-4" />
+          } @else {
+            <z-icon zType="moon" class="h-4 w-4" />
+          }
+          <span class="sr-only">Alternar tema</span>
+        </button> -->
+
+        <z-dropdown-menu>
+          <div dropdown-trigger class="flex items-center gap-3 rounded-full border border-border px-3 py-2 shadow-sm">
+            <z-avatar zSize="sm" [zFallback]="context().displayName.slice(0, 2).toUpperCase()" />
+            <div class="hidden flex-col text-left sm:flex">
+              <span class="text-sm font-medium">{{ context().displayName }}</span>
+              <span class="text-xs text-muted-foreground">{{ context().profile }}</span>
+            </div>
+            <z-badge zType="secondary" class="text-[11px] uppercase tracking-[0.2em]">
+              {{ context().profile }}
+            </z-badge>
           </div>
-          <z-badge zType="secondary" class="text-[11px] uppercase tracking-[0.2em]">
-            {{ context().profile }}
-          </z-badge>
-        </div>
 
-        <div class="min-w-[240px] space-y-2">
-          <div class="px-3 pt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">Perfil</div>
-          @for (profile of profiles; track profile.id) {
-            <button
-              z-dropdown-menu-item
-              type="button"
-              class="w-full text-left"
-              [ngClass]="{ 'font-semibold text-foreground': context().profile === profile.id }"
-              (click)="setProfile(profile.id)"
-            >
-              {{ profile.label }}
-            </button>
-          }
-
-          @if (!isDiretoria()) {
-            <div class="px-3 pt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">Unidade</div>
-            @for (unit of units(); track unit.id) {
+          <div class="min-w-[240px] space-y-2">
+            <div class="px-3 pt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">Perfil</div>
+            @for (profile of profiles; track profile.id) {
               <button
                 z-dropdown-menu-item
                 type="button"
                 class="w-full text-left"
-                [ngClass]="{ 'font-semibold text-foreground': context().unitId === unit.id }"
-                (click)="setUnit(unit.id)"
+                [ngClass]="{ 'font-semibold text-foreground': context().profile === profile.id }"
+                (click)="setProfile(profile.id)"
               >
-                {{ unit.name }}
+                {{ profile.label }}
               </button>
             }
-          }
-        </div>
-      </z-dropdown-menu>
+
+            @if (!isDiretoria()) {
+              <div class="px-3 pt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">Unidade</div>
+              @for (unit of units(); track unit.id) {
+                <button
+                  z-dropdown-menu-item
+                  type="button"
+                  class="w-full text-left"
+                  [ngClass]="{ 'font-semibold text-foreground': context().unitId === unit.id }"
+                  (click)="setUnit(unit.id)"
+                >
+                  {{ unit.name }}
+                </button>
+              }
+            }
+          </div>
+        </z-dropdown-menu>
+      </div>
     </div>
   </header>
 
-  <main class="app-surface">
+  <main class="">
     <div class="mx-auto flex min-h-[calc(100vh-88px)] max-w-6xl flex-col gap-6 px-4 py-6 lg:px-6">
       <router-outlet />
     </div>
