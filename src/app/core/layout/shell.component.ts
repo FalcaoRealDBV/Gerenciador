@@ -100,7 +100,7 @@ export class ShellComponent {
     const stored = localStorage.getItem('theme');
     const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
     const shouldUseDark = stored === 'dark' || (!stored && prefersDark);
-    this.setDarkMode(true);
+    this.setDarkMode(false);
   }
 
   private setDarkMode(isDark: boolean) {
