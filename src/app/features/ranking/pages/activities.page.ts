@@ -77,13 +77,15 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
             />
           </div>
           <div>
-            <label class="text-sm font-medium">Status</label>
-            <z-select class="mt-2 w-full" [zValue]="statusFilter()" (zSelectionChange)="setStatusFilter($event)">
-              <z-select-item zValue="TODOS">Todos</z-select-item>
-              <z-select-item zValue="SEM_COMPROVACAO">Sem comprovacao</z-select-item>
-              <z-select-item zValue="PENDENTE_AVALIACAO">Pendente</z-select-item>
-              <z-select-item zValue="CONCLUIDA">Concluida</z-select-item>
-            </z-select>
+            @if(!isDiretoria()) {
+              <label class="text-sm font-medium">Status</label>
+              <z-select class="mt-2 w-full" [zValue]="statusFilter()" (zSelectionChange)="setStatusFilter($event)">
+                <z-select-item zValue="TODOS">Todos</z-select-item>
+                <z-select-item zValue="SEM_COMPROVACAO">Sem comprovacao</z-select-item>
+                <z-select-item zValue="PENDENTE_AVALIACAO">Pendente</z-select-item>
+                <z-select-item zValue="CONCLUIDA">Concluida</z-select-item>
+              </z-select>
+            }
           </div>
         </div>
       </z-card>
@@ -100,8 +102,10 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
                 }
               </div>
               <div class="flex items-center gap-2">
-                <app-status-badge [status]="statusFor(activity)" />
-                  <a z-button [routerLink]="['/ranking/atividades', activity.id]" zType="outline">{{isDiretoria() ? 'Detalhes' : 'Abrir'}}</a>
+                @if(!isDiretoria()) {
+                  <app-status-badge [status]="statusFor(activity)" />
+                }
+                <a z-button [routerLink]="['/ranking/atividades', activity.id]" zType="outline">{{isDiretoria() ? 'Detalhes' : 'Abrir'}}</a>
                 @if (isDiretoria()) {
                   <a z-button [routerLink]="['/ranking/atividades', activity.id, 'editar']" zType="ghost">Editar</a>
                   <button z-button zType="destructive" (click)="confirmDelete(activity)">Excluir</button>
