@@ -9,6 +9,7 @@ import { SubmissionRepository } from '@/features/ranking/services/submission.rep
 import type { Activity, SubmissionStatus } from '@/features/ranking/models';
 import { ZardButtonComponent } from '@/shared/components/button';
 import { ZardCardComponent } from '@/shared/components/card';
+import { ZardDatePickerComponent } from '@/shared/components/date-picker';
 import { ZardInputDirective } from '@/shared/components/input';
 import { ZardSelectComponent } from '@/shared/components/select';
 import { ZardSelectItemComponent } from '@/shared/components/select/select-item.component';
@@ -26,6 +27,7 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
     FormsModule,
     ZardButtonComponent,
     ZardCardComponent,
+    ZardDatePickerComponent,
     ZardInputDirective,
     ZardSelectComponent,
     ZardSelectItemComponent,
@@ -58,22 +60,20 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
           </div>
           <div>
             <label class="text-sm font-medium">Periodo inicial</label>
-            <input
-              z-input
-              class="mt-2 w-full"
-              type="date"
-              [ngModel]="periodStart()"
-              (ngModelChange)="periodStart.set($event)"
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="toDate(periodStart())"
+              (dateChange)="periodStart.set(fromDate($event))"
             />
           </div>
           <div>
             <label class="text-sm font-medium">Periodo final</label>
-            <input
-              z-input
-              class="mt-2 w-full"
-              type="date"
-              [ngModel]="periodEnd()"
-              (ngModelChange)="periodEnd.set($event)"
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="toDate(periodEnd())"
+              (dateChange)="periodEnd.set(fromDate($event))"
             />
           </div>
           <div>
@@ -141,8 +141,8 @@ export class ActivitiesPageComponent {
 
   protected readonly filteredActivities = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    const start = this.periodStart() ? new Date(this.periodStart()) : undefined;
-    const end = this.periodEnd() ? new Date(this.periodEnd()) : undefined;
+    const start = this.toDate(this.periodStart()) ?? undefined;
+    const end = this.toDate(this.periodEnd()) ?? undefined;
     const status = this.statusFilter();
 
     return this.activities()
@@ -158,8 +158,11 @@ export class ActivitiesPageComponent {
         if (!start && !end) {
           return true;
         }
-        const activityStart = new Date(activity.dataInicio);
-        const activityEnd = new Date(activity.dataFinal);
+        const activityStart = this.toDate(activity.dataInicio);
+        const activityEnd = this.toDate(activity.dataFinal);
+        if (!activityStart || !activityEnd) {
+          return false;
+        }
         if (start && activityEnd < start) {
           return false;
         }
@@ -173,8 +176,29 @@ export class ActivitiesPageComponent {
           return true;
         }
         return this.statusFor(activity) === status;
-      });
+    });
   });
+
+  protected toDate(value: string): Date | null {
+    if (!value) {
+      return null;
+    }
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  }
+
+  protected fromDate(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
   setStatusFilter(value: string | string[]) {
     if (Array.isArray(value)) {

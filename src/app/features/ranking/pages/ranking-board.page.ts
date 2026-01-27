@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RankingRepository } from '@/features/ranking/services/ranking.repository';
 import { ZardCardComponent } from '@/shared/components/card';
 import { ZardBadgeComponent } from '@/shared/components/badge';
+import { ZardDatePickerComponent } from '@/shared/components/date-picker';
 import { ZardInputDirective } from '@/shared/components/input';
 import {
   ZardTableBodyComponent,
@@ -21,6 +22,7 @@ import {
     FormsModule,
     ZardCardComponent,
     ZardBadgeComponent,
+    ZardDatePickerComponent,
     ZardInputDirective,
     ZardTableComponent,
     ZardTableHeaderComponent,
@@ -41,22 +43,20 @@ import {
         <div class="grid gap-4 md:grid-cols-2">
           <div>
             <label class="text-sm font-medium">Data inicio</label>
-            <input
-              class="mt-2 w-full"
-              type="date"
-              [ngModel]="periodStart()"
-              (ngModelChange)="periodStart.set($event)"
-              z-input
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="toDate(periodStart())"
+              (dateChange)="periodStart.set(fromDate($event))"
             />
           </div>
           <div>
             <label class="text-sm font-medium">Data final</label>
-            <input
-              class="mt-2 w-full"
-              type="date"
-              [ngModel]="periodEnd()"
-              (ngModelChange)="periodEnd.set($event)"
-              z-input
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="toDate(periodEnd())"
+              (dateChange)="periodEnd.set(fromDate($event))"
             />
           </div>
         </div>
@@ -74,7 +74,35 @@ import {
       </div>
 
       <z-card zTitle="Tabela completa">
-        <div class="overflow-auto">
+        <div class="grid gap-4 md:hidden">
+          @for (entry of ranking(); track entry.unit.id) {
+            <div class="surface-solid border border-border/70 p-4">
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-xs uppercase tracking-[0.2em] text-muted-foreground">Posicao {{ $index + 1 }}</p>
+                  <p class="truncate text-base font-semibold">{{ entry.unit.name }}</p>
+                </div>
+                <z-badge zType="secondary">{{ entry.total }} pts</z-badge>
+              </div>
+              <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
+                <div class="rounded-lg border border-border/60 px-3 py-2">
+                  <p class="text-xs text-muted-foreground">Concluidas</p>
+                  <p class="font-semibold">{{ entry.concluidas }}</p>
+                </div>
+                <div class="rounded-lg border border-border/60 px-3 py-2">
+                  <p class="text-xs text-muted-foreground">Pendentes</p>
+                  <p class="font-semibold">{{ entry.pendentes }}</p>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="surface-solid border border-border/70 p-4 text-center text-sm text-muted-foreground">
+              Sem dados suficientes para ranking.
+            </div>
+          }
+        </div>
+
+        <div class="hidden overflow-auto rounded-lg border border-border/40 md:block">
           <table z-table class="min-w-full">
             <thead z-table-header>
               <tr z-table-row>
@@ -122,4 +150,25 @@ export class RankingBoardPageComponent {
   protected readonly topThree = computed(() => this.ranking().slice(0, 3));
 
   constructor(private readonly repo: RankingRepository) {}
+
+  protected toDate(value: string): Date | null {
+    if (!value) {
+      return null;
+    }
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  }
+
+  protected fromDate(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 }

@@ -7,13 +7,14 @@ import { filter, map, switchMap } from 'rxjs';
 import { ActivityRepository } from '@/features/ranking/services/activity.repository';
 import { ZardButtonComponent } from '@/shared/components/button';
 import { ZardCardComponent } from '@/shared/components/card';
+import { ZardDatePickerComponent } from '@/shared/components/date-picker';
 import { ZardInputDirective } from '@/shared/components/input';
 import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-activity-form-page',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ZardButtonComponent, ZardCardComponent, ZardInputDirective],
+  imports: [ReactiveFormsModule, RouterLink, ZardButtonComponent, ZardCardComponent, ZardDatePickerComponent, ZardInputDirective],
   template: `
     <section class="flex flex-col gap-6">
       <div class="flex items-start justify-between gap-4">
@@ -51,11 +52,21 @@ import { toast } from 'ngx-sonner';
 
           <div>
             <label class="text-sm font-medium">Data inicio *</label>
-            <input z-input class="mt-2 w-full" type="date" formControlName="dataInicio" />
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="form.controls['dataInicio'].value"
+              (dateChange)="form.controls['dataInicio'].setValue($event)"
+            />
           </div>
           <div>
             <label class="text-sm font-medium">Data final *</label>
-            <input z-input class="mt-2 w-full" type="date" formControlName="dataFinal" />
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="form.controls['dataFinal'].value"
+              (dateChange)="form.controls['dataFinal'].setValue($event)"
+            />
             @if (form.errors?.['periodoInvalido']) {
               <p class="mt-1 text-xs text-destructive">Data final deve ser maior ou igual a data inicio.</p>
             }
@@ -100,8 +111,8 @@ export class ActivityFormPageComponent {
     {
       nome: ['', [Validators.required, Validators.maxLength(120)]],
       descricao: ['', [Validators.required, Validators.maxLength(500)]],
-      dataInicio: ['', Validators.required],
-      dataFinal: ['', Validators.required],
+      dataInicio: [null as Date | null, Validators.required],
+      dataFinal: [null as Date | null, Validators.required],
       pontuacao: [0, [Validators.required, Validators.min(1)]],
       pontuacaoBonus: [0, [Validators.min(0)]]
     },
@@ -124,8 +135,8 @@ export class ActivityFormPageComponent {
         this.form.patchValue({
           nome: activity.nome,
           descricao: activity.descricao,
-          dataInicio: activity.dataInicio,
-          dataFinal: activity.dataFinal,
+          dataInicio: this.toDate(activity.dataInicio),
+          dataFinal: this.toDate(activity.dataFinal),
           pontuacao: activity.pontuacao,
           pontuacaoBonus: activity.pontuacaoBonus ?? 0
         });
@@ -141,8 +152,8 @@ export class ActivityFormPageComponent {
     const payload = {
       nome: this.form.value.nome ?? '',
       descricao: this.form.value.descricao ?? '',
-      dataInicio: this.form.value.dataInicio ?? '',
-      dataFinal: this.form.value.dataFinal ?? '',
+      dataInicio: this.fromDate(this.form.value.dataInicio ?? null),
+      dataFinal: this.fromDate(this.form.value.dataFinal ?? null),
       pontuacao: Number(this.form.value.pontuacao),
       pontuacaoBonus: this.form.value.pontuacaoBonus ? Number(this.form.value.pontuacaoBonus) : undefined
     };
@@ -164,12 +175,33 @@ export class ActivityFormPageComponent {
     });
   }
 
-  private validarPeriodo(group: { value: { dataInicio?: string; dataFinal?: string } }) {
-    const inicio = group.value.dataInicio ? new Date(group.value.dataInicio) : null;
-    const fim = group.value.dataFinal ? new Date(group.value.dataFinal) : null;
+  private validarPeriodo(group: { value: { dataInicio?: Date | null; dataFinal?: Date | null } }) {
+    const inicio = group.value.dataInicio ?? null;
+    const fim = group.value.dataFinal ?? null;
     if (!inicio || !fim) {
       return null;
     }
     return fim >= inicio ? null : { periodoInvalido: true };
+  }
+
+  private toDate(value: string): Date | null {
+    if (!value) {
+      return null;
+    }
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  }
+
+  private fromDate(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

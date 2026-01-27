@@ -7,6 +7,7 @@ import { SubmissionRepository } from '@/features/ranking/services/submission.rep
 import type { Activity, ProofSubmission, Unit } from '@/features/ranking/models';
 import { ZardCardComponent } from '@/shared/components/card';
 import { ZardButtonComponent } from '@/shared/components/button';
+import { ZardDatePickerComponent } from '@/shared/components/date-picker';
 import { ZardInputDirective } from '@/shared/components/input';
 import { ZardSelectComponent } from '@/shared/components/select';
 import { ZardSelectItemComponent } from '@/shared/components/select/select-item.component';
@@ -34,6 +35,7 @@ interface PendingRow {
     FormsModule,
     ZardCardComponent,
     ZardButtonComponent,
+    ZardDatePickerComponent,
     ZardInputDirective,
     ZardSelectComponent,
     ZardSelectItemComponent,
@@ -74,13 +76,41 @@ interface PendingRow {
           </div>
           <div>
             <label class="text-sm font-medium">Data envio</label>
-            <input z-input class="mt-2 w-full" type="date" [(ngModel)]="dateFilter" />
+            <z-date-picker
+              class="mt-2 w-full [&_button]:w-full"
+              placeholder="Selecione"
+              [value]="toDate(dateFilter)"
+              (dateChange)="dateFilter = fromDate($event)"
+            />
           </div>
         </div>
       </z-card>
 
       <z-card zTitle="Pendencias">
-        <div class="overflow-auto">
+        <div class="grid gap-4 md:hidden">
+          @for (row of filteredRows(); track row.submission.id) {
+            <div class="surface-solid border border-border/70 p-4">
+              <div class="flex flex-col gap-3">
+                <div class="min-w-0">
+                  <p class="text-xs uppercase tracking-[0.2em] text-muted-foreground">{{ row.unit.name }}</p>
+                  <p class="text-base font-semibold leading-snug break-words whitespace-normal">
+                    {{ row.activity.nome }}
+                  </p>
+                  <p class="mt-1 text-xs text-muted-foreground">
+                    Enviado: {{ row.submission.submittedAt || '-' }}
+                  </p>
+                </div>
+                <button class="w-full" z-button zType="outline" (click)="openReview(row)">Avaliar</button>
+              </div>
+            </div>
+          } @empty {
+            <div class="surface-solid border border-border/70 p-4 text-center text-sm text-muted-foreground">
+              Nenhuma comprovacao pendente.
+            </div>
+          }
+        </div>
+
+        <div class="hidden overflow-auto rounded-lg border border-border/40 md:block">
           <table z-table class="min-w-full">
             <thead z-table-header>
               <tr z-table-row>
@@ -145,7 +175,7 @@ export class PendingReviewsPageComponent {
   protected readonly filteredRows = computed(() => {
     const unit = this.unitFilter();
     const activity = this.activityFilter();
-    const date = this.dateFilter ? new Date(this.dateFilter) : null;
+    const date = this.toDate(this.dateFilter);
     return this.rows().filter(row => {
       if (unit && row.unit.id !== unit) {
         return false;
@@ -185,5 +215,26 @@ export class PendingReviewsPageComponent {
       zHideFooter: true,
       zWidth: '720px'
     });
+  }
+
+  protected toDate(value: string): Date | null {
+    if (!value) {
+      return null;
+    }
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) {
+      return null;
+    }
+    return new Date(year, month - 1, day);
+  }
+
+  protected fromDate(value: Date | null): string {
+    if (!value) {
+      return '';
+    }
+    const year = value.getFullYear();
+    const month = `${value.getMonth() + 1}`.padStart(2, '0');
+    const day = `${value.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
