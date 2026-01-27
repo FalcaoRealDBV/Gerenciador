@@ -55,6 +55,7 @@ export class ZardDialogService {
       const overlayConfig = new OverlayConfig({
         hasBackdrop: true,
         positionStrategy: this.overlay.position().global(),
+        scrollStrategy: this.overlay.scrollStrategies.block(),
       });
 
       return this.overlay.create(overlayConfig);

@@ -94,6 +94,7 @@ export class ZardAlertDialogService {
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-dark-backdrop',
       positionStrategy: this.overlay.position().global(),
+      scrollStrategy: this.overlay.scrollStrategies.block(),
     });
 
     return this.overlay.create(overlayConfig);

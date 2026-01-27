@@ -10,6 +10,7 @@ import { ZardDropdownMenuComponent } from '@/shared/components/dropdown';
 import { ZardDropdownMenuItemComponent } from '@/shared/components/dropdown/dropdown-item.component';
 import { ZardAvatarComponent } from '@/shared/components/avatar';
 import { ZardIconComponent } from '@/shared/components/icon';
+import type { ZardIcon } from '@/shared/components/icon/icons';
 import { ZardToastComponent } from '@/shared/components/toast';
 import { DOCUMENT, isPlatformBrowser, NgClass } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
@@ -17,6 +18,7 @@ import { PLATFORM_ID } from '@angular/core';
 interface NavLink {
   label: string;
   path: string;
+  icon: ZardIcon;
   roles?: UserProfile[];
 }
 
@@ -42,11 +44,11 @@ interface NavLink {
 })
 export class ShellComponent {
   protected readonly links: NavLink[] = [
-    { label: 'Dashboard', path: '/' },
-    { label: 'Atividades', path: '/ranking/atividades' },
-    { label: 'Avaliacoes', path: '/ranking/avaliacoes', roles: ['DIRETORIA'] },
-    { label: 'Ranking', path: '/ranking/ranking', roles: ['DIRETORIA'] },
-    { label: 'Simulacao', path: '/simulacao' }
+    { label: 'Dashboard', path: '/', icon: 'layout-dashboard' },
+    { label: 'Atividades', path: '/ranking/atividades', icon: 'activity' },
+    { label: 'Avaliacoes', path: '/ranking/avaliacoes', icon: 'clipboard', roles: ['DIRETORIA'] },
+    { label: 'Ranking', path: '/ranking/ranking', icon: 'badge-check', roles: ['DIRETORIA'] },
+    { label: 'Simulacao', path: '/simulacao', icon: 'sparkles' }
   ];
 
   protected readonly profiles: { id: UserProfile; label: string }[] = [

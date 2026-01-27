@@ -1,0 +1,58 @@
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-strong-shadow);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-saturate));
+  }
+
+  .surface-solid {
+    background: var(--surface-solid);
+    border: 1px solid var(--border);
+    box-shadow: var(--surface-shadow);
+    border-radius: var(--radius-lg);
+  }
+
+  .glass-card {
+    --glass-card-padding: 1.25rem;
+    padding: var(--glass-card-padding);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+
+  [data-slot='card'].glass-card {
+    --glass-card-padding: 0;
+  }
+}
+
+@layer utilities {
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 35%, transparent);
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong,
+  .glass-card {
+    background: color-mix(in oklch, var(--surface-solid) 88%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
