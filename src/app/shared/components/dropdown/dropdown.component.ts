@@ -68,7 +68,7 @@ export class ZardDropdownMenuComponent implements OnInit, OnDestroy {
   private overlayRef?: OverlayRef;
   private portal?: TemplatePortal;
 
-  readonly class = input<ClassValue>('');
+  readonly contentClass = input<ClassValue>('');
   readonly disabled = input(false, { transform });
 
   readonly openChange = output<boolean>();
@@ -76,7 +76,7 @@ export class ZardDropdownMenuComponent implements OnInit, OnDestroy {
   readonly isOpen = signal(false);
   readonly focusedIndex = signal<number>(-1);
 
-  protected readonly contentClasses = computed(() => mergeClasses(dropdownContentVariants(), this.class()));
+  protected readonly contentClasses = computed(() => mergeClasses(dropdownContentVariants(), this.contentClass()));
 
   ngOnInit() {
     setTimeout(() => {

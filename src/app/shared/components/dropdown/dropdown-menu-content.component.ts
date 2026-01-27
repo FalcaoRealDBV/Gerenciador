@@ -32,7 +32,7 @@ import { mergeClasses } from '@/shared/utils/merge-classes';
 export class ZardDropdownMenuContentComponent {
   readonly contentTemplate = viewChild.required<TemplateRef<unknown>>('contentTemplate');
 
-  readonly class = input<ClassValue>('');
+  readonly contentClass = input<ClassValue>('');
 
-  protected readonly contentClasses = computed(() => mergeClasses(dropdownContentVariants(), this.class()));
+  protected readonly contentClasses = computed(() => mergeClasses(dropdownContentVariants(), this.contentClass()));
 }

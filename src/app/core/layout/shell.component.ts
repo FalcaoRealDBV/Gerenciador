@@ -100,7 +100,7 @@ export class ShellComponent {
     const stored = localStorage.getItem('theme');
     const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
     const shouldUseDark = stored === 'dark' || (!stored && prefersDark);
-    this.setDarkMode(shouldUseDark);
+    this.setDarkMode(true);
   }
 
   private setDarkMode(isDark: boolean) {
@@ -109,6 +109,7 @@ export class ShellComponent {
       return;
     }
     this.document.documentElement.classList.toggle('dark', isDark);
+    this.document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }
 }
