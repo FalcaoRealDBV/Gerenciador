@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -33,7 +34,8 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
     ZardSelectComponent,
     ZardSelectItemComponent,
     ZardIconComponent,
-    StatusBadgeComponent
+    StatusBadgeComponent,
+    DatePipe
   ],
   template: `
     <section class="flex flex-col gap-6">
@@ -115,7 +117,9 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
           <z-card [zTitle]="activity.nome" [zDescription]="activity.descricao">
             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between flex-wrap">
               <div class="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                <span>{{ activity.dataInicio }} - {{ activity.dataFinal }}</span>
+                <span>
+                  {{ activity.dataInicio | date: 'dd/MM/yyyy' }} - {{ activity.dataFinal | date: 'dd/MM/yyyy' }}
+                </span>
                 <span>Base: {{ activity.pontuacao }} pts</span>
                 @if (activity.pontuacaoBonus) {
                   <span>Bonus: {{ activity.pontuacaoBonus }} pts</span>

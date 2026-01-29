@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -44,7 +45,8 @@ interface PendingRow {
     ZardTableBodyComponent,
     ZardTableRowComponent,
     ZardTableHeadComponent,
-    ZardTableCellComponent
+    ZardTableCellComponent,
+    DatePipe
   ],
   template: `
     <section class="flex flex-col gap-6">
@@ -97,7 +99,10 @@ interface PendingRow {
                     {{ row.activity.nome }}
                   </p>
                   <p class="mt-1 text-xs text-muted-foreground">
-                    Enviado: {{ row.submission.submittedAt || '-' }}
+                    Enviado:
+                    {{
+                      row.submission.submittedAt ? (row.submission.submittedAt | date: 'dd/MM/yyyy') : '-'
+                    }}
                   </p>
                 </div>
                 <button class="w-full" z-button zType="outline" (click)="openReview(row)">Avaliar</button>
@@ -125,7 +130,11 @@ interface PendingRow {
                 <tr z-table-row>
                   <td z-table-cell>{{ row.unit.name }}</td>
                   <td z-table-cell>{{ row.activity.nome }}</td>
-                  <td z-table-cell>{{ row.submission.submittedAt || '-' }}</td>
+                  <td z-table-cell>
+                    {{
+                      row.submission.submittedAt ? (row.submission.submittedAt | date: 'dd/MM/yyyy') : '-'
+                    }}
+                  </td>
                   <td z-table-cell class="text-right">
                     <button z-button zType="outline" (click)="openReview(row)">Avaliar</button>
                   </td>

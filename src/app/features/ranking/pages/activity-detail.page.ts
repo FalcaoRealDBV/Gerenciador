@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -16,7 +17,15 @@ import { toast } from 'ngx-sonner';
 @Component({
   selector: 'app-activity-detail-page',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, ZardButtonComponent, ZardCardComponent, ZardInputDirective, StatusBadgeComponent],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    ZardButtonComponent,
+    ZardCardComponent,
+    ZardInputDirective,
+    StatusBadgeComponent,
+    DatePipe
+  ],
   template: `
     <section class="flex flex-col gap-6">
       <a routerLink="/ranking/atividades" class="text-sm text-muted-foreground hover:text-foreground">← Voltar</a>
@@ -24,7 +33,9 @@ import { toast } from 'ngx-sonner';
       @if (activity()) {
         <z-card [zTitle]="activity()!.nome" [zDescription]="activity()!.descricao">
           <div class="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span>{{ activity()!.dataInicio }} - {{ activity()!.dataFinal }}</span>
+            <span>
+              {{ activity()!.dataInicio | date: 'dd/MM/yyyy' }} - {{ activity()!.dataFinal | date: 'dd/MM/yyyy' }}
+            </span>
             <span>Base: {{ activity()!.pontuacao }} pts</span>
             @if (activity()!.pontuacaoBonus) {
               <span>Bonus: {{ activity()!.pontuacaoBonus }} pts</span>
