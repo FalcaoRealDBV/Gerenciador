@@ -13,6 +13,7 @@ import { ZardDatePickerComponent } from '@/shared/components/date-picker';
 import { ZardInputDirective } from '@/shared/components/input';
 import { ZardSelectComponent } from '@/shared/components/select';
 import { ZardSelectItemComponent } from '@/shared/components/select/select-item.component';
+import { ZardIconComponent } from '@/shared/components/icon';
 import { StatusBadgeComponent } from '@/shared/ui/status-badge.component';
 import { ZardAlertDialogService } from '@/shared/components/alert-dialog';
 import { toast } from 'ngx-sonner';
@@ -31,6 +32,7 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
     ZardInputDirective,
     ZardSelectComponent,
     ZardSelectItemComponent,
+    ZardIconComponent,
     StatusBadgeComponent
   ],
   template: `
@@ -41,54 +43,72 @@ type StatusFilter = 'TODOS' | SubmissionStatus;
           <h2 class="text-3xl font-semibold">Atividades</h2>
           <p class="text-muted-foreground">Organize, acompanhe e envie comprovacoes.</p>
         </div>
-        @if (isDiretoria()) {
-          <a z-button routerLink="/ranking/atividades/nova">Nova atividade</a>
-        }
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            z-button
+            zType="outline"
+            type="button"
+            class="rounded-full p-2"
+            [attr.aria-pressed]="filtersOpen()"
+            aria-label="Filtrar"
+            (click)="toggleFilters()"
+          >
+            <z-icon zType="list-filter-plus" class="h-4 w-4" /> Filtros
+          </button>
+          @if (isDiretoria()) {
+            <a z-button routerLink="/ranking/atividades/nova">Nova atividade</a>
+          }
+        </div>
       </div>
 
-      <z-card zTitle="Filtros" zDescription="Refine por nome, periodo e status">
-        <div class="grid gap-4 md:grid-cols-3">
-          <div>
-            <label class="text-sm font-medium">Busca</label>
-            <input
-              z-input
-              class="mt-2 w-full"
-              placeholder="Nome ou descricao"
-              [ngModel]="searchTerm()"
-              (ngModelChange)="searchTerm.set($event)"
-            />
+      @if (filtersOpen()) {
+        <z-card zTitle="Filtros" zDescription="Refine por nome, periodo e status">
+          <div class="grid gap-4 md:grid-cols-3">
+            <div>
+              <label class="text-sm font-medium">Busca</label>
+              <input
+                z-input
+                class="mt-2 w-full"
+                placeholder="Nome ou descricao"
+                [ngModel]="searchTerm()"
+                (ngModelChange)="searchTerm.set($event)"
+              />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Periodo inicial</label>
+              <z-date-picker
+                class="mt-2 w-full [&_button]:w-full"
+                placeholder="Selecione"
+                [value]="toDate(periodStart())"
+                (dateChange)="periodStart.set(fromDate($event))"
+              />
+            </div>
+            <div>
+              <label class="text-sm font-medium">Periodo final</label>
+              <z-date-picker
+                class="mt-2 w-full [&_button]:w-full"
+                placeholder="Selecione"
+                [value]="toDate(periodEnd())"
+                (dateChange)="periodEnd.set(fromDate($event))"
+              />
+            </div>
+            <div>
+              @if (!isDiretoria()) {
+                <label class="text-sm font-medium">Status</label>
+                <z-select class="mt-2 w-full" [zValue]="statusFilter()" (zSelectionChange)="setStatusFilter($event)">
+                  <z-select-item zValue="TODOS">Todos</z-select-item>
+                  <z-select-item zValue="SEM_COMPROVACAO">Sem comprovacao</z-select-item>
+                  <z-select-item zValue="PENDENTE_AVALIACAO">Pendente</z-select-item>
+                  <z-select-item zValue="CONCLUIDA">Concluida</z-select-item>
+                </z-select>
+              }
+            </div>
           </div>
-          <div>
-            <label class="text-sm font-medium">Periodo inicial</label>
-            <z-date-picker
-              class="mt-2 w-full [&_button]:w-full"
-              placeholder="Selecione"
-              [value]="toDate(periodStart())"
-              (dateChange)="periodStart.set(fromDate($event))"
-            />
+          <div class="mt-4 flex items-center justify-end">
+            <button z-button zType="ghost" type="button" (click)="clearFilters()">Limpar filtros</button>
           </div>
-          <div>
-            <label class="text-sm font-medium">Periodo final</label>
-            <z-date-picker
-              class="mt-2 w-full [&_button]:w-full"
-              placeholder="Selecione"
-              [value]="toDate(periodEnd())"
-              (dateChange)="periodEnd.set(fromDate($event))"
-            />
-          </div>
-          <div>
-            @if(!isDiretoria()) {
-              <label class="text-sm font-medium">Status</label>
-              <z-select class="mt-2 w-full" [zValue]="statusFilter()" (zSelectionChange)="setStatusFilter($event)">
-                <z-select-item zValue="TODOS">Todos</z-select-item>
-                <z-select-item zValue="SEM_COMPROVACAO">Sem comprovacao</z-select-item>
-                <z-select-item zValue="PENDENTE_AVALIACAO">Pendente</z-select-item>
-                <z-select-item zValue="CONCLUIDA">Concluida</z-select-item>
-              </z-select>
-            }
-          </div>
-        </div>
-      </z-card>
+        </z-card>
+      }
 
       <div class="grid gap-4">
         @for (activity of filteredActivities(); track activity.id) {
@@ -128,6 +148,7 @@ export class ActivitiesPageComponent {
   protected readonly periodStart = signal('');
   protected readonly periodEnd = signal('');
   protected readonly statusFilter = signal<StatusFilter>('TODOS');
+  protected readonly filtersOpen = signal(false);
 
   private readonly activityRepo = inject(ActivityRepository);
   private readonly submissionRepo = inject(SubmissionRepository);
@@ -205,6 +226,17 @@ export class ActivitiesPageComponent {
       return;
     }
     this.statusFilter.set(value as StatusFilter);
+  }
+
+  toggleFilters() {
+    this.filtersOpen.update(value => !value);
+  }
+
+  clearFilters() {
+    this.searchTerm.set('');
+    this.periodStart.set('');
+    this.periodEnd.set('');
+    this.statusFilter.set('TODOS');
   }
 
   statusFor(activity: Activity): SubmissionStatus {
